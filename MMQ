@@ -1,0 +1,105 @@
+clc;clear;
+format (25) // um maior número de casas decimais 
+// Encontrar uma funcao da forma f(x) = b1 + cx + dx^2 + ex^3 + fx^4 + gx^5
+// que melhor se ajuste  a tabela
+x=[01 02 03 04 05 06 07 08];// no eixo x temos os anos colocados como ano 1, ano 2 , ano 3 a partir do primeiro ano da analise
+y=[85970 92245 98287 98630 87795 89215 103098 96387];//Aqui vai a producao anual de energia da usina analisada
+tabela=[x;y]
+//GRAFICO DOS PONTOS DA TABELA
+plot2d(x,y,style=-1);
+//FUNCOES QUE GERAM A FAMILA F SAO:
+//--> g1(x)=1 , g2(x)=x , g3(x)=x^2 , g4(x)=x^3 , g5(x)=x^4 , g6(x)=x^5 g7(x)=x^6
+deff("y=g1(x)","y=1");           //   funcao geradora e...
+deff("y=g2(x)","y=x");           //  outra funcao geradora
+deff("y=g3(x)","y=x.^2");        //  outra funcao geradora.
+deff("y=g4(x)","y=x.^3");        //  outra funcao geradora.
+deff("y=g5(x)","y=x.^4");        //  outra funcao geradora.
+deff("y=g6(x)","y=x.^5");        //  outra funcao geradora.
+deff("y=g7(x)","y=x.^6");        //  outra funcao geradora.
+
+//TABELA COM TODOS OS DADOS PARA AS CONTAS
+tabela2=[x;y;1 1 1 1 1 1 1 1;g2(x);g3(x);g4(x); g5(x); g6(x); g7(x)]
+
+
+//SISTEMA NORMAL: MATRIZ DOS COEFICIENTES:
+A(1,1) = 8';
+A(1,2) = [1 1 1 1 1 1 1 1]*g2(x)';
+A(1,3) = [1 1 1 1 1 1 1 1]*g3(x)';
+A(1,4) = [1 1 1 1 1 1 1 1]*g4(x)';
+A(1,5) = [1 1 1 1 1 1 1 1]*g5(x)';
+A(1,6) = [1 1 1 1 1 1 1 1]*g6(x)';
+A(1,7) = [1 1 1 1 1 1 1 1]*g7(x)';
+A(2,1)=A(1,2);
+A(2,2) = g2(x)*g2(x)';
+A(2,3) = g2(x)*g3(x)';
+A(2,4) = g2(x)*g4(x)';
+A(2,5) = g2(x)*g5(x)';
+A(2,6) = g2(x)*g6(x)';
+A(2,7) = g2(x)*g7(x)';
+A(3,1) = A(1,3);
+A(3,2) = A(2,3);
+A(3,3) = g3(x)*g3(x)';
+A(3,4) = g3(x)*g4(x)';
+A(3,5) = g3(x)*g5(x)';
+A(3,6) = g3(x)*g6(x)';
+A(3,7) = g3(x)*g7(x)';
+A(4,1)= A(1,4);
+A(4,2)= A(2,4);
+A(4,3)= A(3,4);
+A(4,4)= g4(x)*g4(x)';
+A(4,5)= g4(x)*g5(x)';
+A(4,6)= g4(x)*g6(x)';
+A(4,7)= g4(x)*g7(x)';
+A(5,1)= A(1,5);
+A(5,2)= A(2,5);
+A(5,3)= A(3,5);
+A(5,4)= A(4,5);
+A(5,5)= g5(x)*g5(x)';
+A(5,6)= g5(x)*g6(x)';
+A(5,7)= g5(x)*g7(x)';
+A(6,1)= A(1,6);
+A(6,2)= A(2,6);
+A(6,3)= A(3,6);
+A(6,4)= A(4,6);
+A(6,5)= A(5,6);
+A(6,6)= g6(x)*g6(x)';
+A(6,7)= g6(x)*g7(x)';
+A(7,1)= A(1,7);
+A(7,2)= A(2,7);
+A(7,3)= A(3,7);
+A(7,4)= A(4,7);
+A(7,5)= A(5,7);
+A(7,6)= A(6,7);
+A(7,7)= g7(x)*g7(x)';
+
+
+//COM Y ACHAMOS O VETOR DOS TERMOS INDEPENDENTES:
+//B(1) = <y,g1>, B(2)=<y,g2>, B(3)=<y,g3>, B(4)=<y,g4>, B(5)=<y,g5>, B(6)=<y,g6> e B(7)=<y,g7>
+B(1)=y*[1 1 1 1 1 1 1 1]'; B(2)=y*g2(x)'; B(3)=y*g3(x)'; B(4)=y*g4(x)'; B(5)=y*g5(x)'; B(6)=y*g6(x)';B(7)=y*g7(x)'  // definindo B
+//                 Resolvendo o sistema Ax=B obtemos:
+Coef=inv(A)*B
+//ESTES SAO OS COEFICIENTES a E b PROCURADOS E A FUNCAO SOLUCAO EH:
+//f(x) =Coef(1)*1 +Coef(2)*x+Coef(3)*x.^2+Coef(4)*x.^3+Coef(5)*x.^4+Coef(6)*x.^5+Coef(7)*x.^6;
+deff("y=f(x)", "y=Coef(1)*1 +Coef(2)*x+Coef(3)*x.^2+Coef(4)*x.^3+Coef(5)*x.^4+Coef(6)*x.^5+Coef(7)*x.^6") // solucao do MMQ
+
+//FINALMENTE PLOTAMOS A FUNCAO MELHOR AJUSTE ENCONTRADA  
+I=[01:0.02:9];
+plot2d(I,f(I), style=2)
+//FIM
+
+printf ("coefciente que multiplica g1=1")
+disp(Coef(1));
+printf ("coefciente que multiplica g2=x")
+disp(Coef(2));
+printf ("coefciente que multiplica g3=x^2")
+disp(Coef(3));
+printf ("coeficiente que multiplica g4=x^3")
+disp(Coef(4));
+printf ("coneficiente que multiplica g5=x^4")
+disp(Coef(5));
+printf ("coeficiente que multiplica g6=x^5")
+disp(Coef(6));
+printf ("coeficiente que multiplica g7=x^6")
+disp(Coef(7));
+
+
